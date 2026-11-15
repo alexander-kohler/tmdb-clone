@@ -7,6 +7,12 @@ const inter = Inter({ subsets: ["latin"] });
 const API_KEY = process.env.API_KEY;
 
 export default async function Home({ searchParams }: any) {
+  if (!API_KEY) {
+    throw new Error(
+      "Missing API_KEY. Copy .env.example to .env.local and add your TMDB API key (https://www.themoviedb.org/settings/api), then restart the dev server."
+    );
+  }
+
   const genre = searchParams.genre || "fetchTrending";
 
   const res = await fetch(
@@ -17,7 +23,9 @@ export default async function Home({ searchParams }: any) {
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch data");
+    throw new Error(
+      `Failed to fetch data from TMDB (${res.status}). Check that API_KEY in .env.local is valid.`
+    );
   }
 
   const data = await res.json();
